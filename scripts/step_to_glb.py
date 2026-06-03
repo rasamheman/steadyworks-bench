@@ -14,7 +14,7 @@ from build123d import import_step
 
 # Steel-blue, slightly darker than the off-white background for clear contrast.
 # RGBA, 0-255.
-CAD_COLOR = np.array([138, 158, 184, 255], dtype=np.uint8)
+CAD_COLOR = np.array([100, 110, 125, 255], dtype=np.uint8)
 
 
 def main():
