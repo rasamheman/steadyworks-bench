@@ -32,8 +32,10 @@ function TaskCard({ task }: { task: Task }) {
             camera-controls
             auto-rotate
             interaction-prompt="none"
-            shadow-intensity="0.5"
-            exposure="1"
+            shadow-intensity="1"
+            shadow-softness="0.75"
+            exposure="1.15"
+            tone-mapping="commerce"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-sm">

@@ -1,12 +1,20 @@
 """STEP -> GLB converter using build123d (via OCP) + trimesh.
 
+Bakes a steel-blue CAD-style material into the GLB so it has contrast
+against the website's light background.
+
 Usage: python step_to_glb.py <input.step> <output.glb>
 """
 import sys
 from pathlib import Path
 
+import numpy as np
 import trimesh
 from build123d import import_step
+
+# Steel-blue, slightly darker than the off-white background for clear contrast.
+# RGBA, 0-255.
+CAD_COLOR = np.array([138, 158, 184, 255], dtype=np.uint8)
 
 
 def main():
@@ -20,15 +28,15 @@ def main():
         sys.exit(1)
     dst.parent.mkdir(parents=True, exist_ok=True)
 
-    # Use build123d to import STEP, then export to STL bytes,
-    # then trimesh to convert STL -> GLB (trimesh's STEP loader is unreliable;
-    # build123d's import + STL bridge is the most robust path).
     compound = import_step(str(src))
     stl_path = dst.with_suffix(".tmp.stl")
     try:
         from build123d import export_stl
         export_stl(compound, str(stl_path))
         mesh = trimesh.load(str(stl_path), force="mesh")
+        # Paint every face with the steel-blue CAD color so the GLB has
+        # consistent shading regardless of the viewer's environment.
+        mesh.visual.face_colors = np.tile(CAD_COLOR, (len(mesh.faces), 1))
         mesh.export(str(dst), file_type="glb")
     finally:
         if stl_path.exists():
