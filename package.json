@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build:data": "node scripts/build-data.mjs",
-    "build": "npm run build:data && next build",
+    "build": "next build",
+    "build:local": "npm run build:data && next build",
     "start": "next start",
     "lint": "next lint"
   },
