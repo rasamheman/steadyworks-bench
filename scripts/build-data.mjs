@@ -10,6 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEBSITE_ROOT = resolve(__dirname, "..");
 const TASKS_ROOT = resolve(WEBSITE_ROOT, "..");
 const MODELS_OUT = join(WEBSITE_ROOT, "public", "models");
+const SCHEMAS_OUT = join(WEBSITE_ROOT, "public", "schemas");
 const DATA_OUT = join(WEBSITE_ROOT, "data", "tasks.json");
 const STEP_TO_GLB = join(WEBSITE_ROOT, "scripts", "step_to_glb.py");
 
@@ -48,6 +49,13 @@ function findStep(dir) {
   const files = readdirSync(dir);
   const stepFile = files.find((f) => /\.(step|STEP|stp|STP)$/i.test(f));
   return stepFile ? join(dir, stepFile) : null;
+}
+
+function findPdf(dir) {
+  if (!existsSync(dir)) return null;
+  const files = readdirSync(dir);
+  const pdfFile = files.find((f) => /\.pdf$/i.test(f));
+  return pdfFile ? join(dir, pdfFile) : null;
 }
 
 function findLatestTrialOfModel(taskDir, modelKey) {
@@ -157,6 +165,7 @@ function processTask(taskDir) {
     : "";
 
   const inputStep = findStep(join(taskDir, "environment"));
+  const inputPdf = findPdf(join(taskDir, "environment"));
   const refStep = findStep(join(taskDir, "solution"));
 
   const opusTrial = findLatestTrialOfModel(taskDir, "opus-4-7");
@@ -184,6 +193,20 @@ function processTask(taskDir) {
     haiku: maybeConvert(haikuOutStep, "haiku"),
   };
 
+  // Copy PDF schematic (if any) so tasks like corner-bracket-v2 / bore-socket
+  // can show the schematic as the "Input" panel instead of an empty model viewer.
+  let inputPdfUrl = null;
+  if (inputPdf) {
+    const schemaDir = join(SCHEMAS_OUT, id);
+    mkdirSync(schemaDir, { recursive: true });
+    // Normalize the filename — strip spaces and special chars from URL to avoid encoding issues
+    const safeName = "schematic.pdf";
+    const dst = join(schemaDir, safeName);
+    copyFileSync(inputPdf, dst);
+    inputPdfUrl = `/schemas/${id}/${safeName}`;
+    log(`  copied schematic -> ${inputPdfUrl}`);
+  }
+
   const results = {
     opus: summaryToRecord(opusTrial ? loadRunSummary(opusTrial.trialPath) : null),
     haiku: summaryToRecord(haikuTrial ? loadRunSummary(haikuTrial.trialPath) : null),
@@ -197,6 +220,7 @@ function processTask(taskDir) {
     difficulty: sw.difficulty ?? null,
     discriminator: sw.discriminator ?? null,
     prompt,
+    input_pdf: inputPdfUrl,
     models,
     results,
   };

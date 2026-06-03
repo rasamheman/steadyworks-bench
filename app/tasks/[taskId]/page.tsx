@@ -125,7 +125,22 @@ export default function TaskPage({ params }: { params: { taskId: string } }) {
       <section>
         <h2 className="text-sm uppercase tracking-wider text-neutral-500 mb-2">Models</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ModelPanel src={task.models.input} label="Input (stock)" />
+          {(task as { input_pdf?: string | null }).input_pdf ? (
+            <div className="border border-neutral-200 rounded-md overflow-hidden bg-white">
+              <div className="aspect-square bg-neutral-50 relative">
+                <iframe
+                  src={(task as { input_pdf: string }).input_pdf}
+                  className="absolute inset-0 w-full h-full"
+                  title={`${task.id} schematic`}
+                />
+              </div>
+              <div className="px-3 py-2 border-t border-neutral-200 text-[10px] uppercase tracking-wider text-neutral-600">
+                Input (PDF schematic)
+              </div>
+            </div>
+          ) : (
+            <ModelPanel src={task.models.input} label="Input (stock)" />
+          )}
           <ModelPanel src={task.models.reference} label="Reference" />
           <ModelPanel src={task.models.opus} label="Opus 4.7 output" />
           <ModelPanel src={task.models.haiku} label="Haiku 4.5 output" />

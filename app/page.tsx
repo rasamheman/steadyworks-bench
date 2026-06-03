@@ -3,19 +3,12 @@ import tasks from "@/data/tasks.json";
 
 type Task = (typeof tasks.tasks)[number];
 
-function rewardChip(reward: number | null | undefined, label: string) {
-  if (reward === null || reward === undefined) {
-    return <span className="text-[10px] uppercase tracking-wider text-neutral-400">{label} —</span>;
-  }
-  const color =
-    reward >= 0.8 ? "bg-emerald-100 text-emerald-700"
-    : reward >= 0.5 ? "bg-amber-100 text-amber-700"
-    : "bg-rose-100 text-rose-700";
-  return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono ${color}`}>
-      {label} {reward.toFixed(2)}
-    </span>
-  );
+// Map a task to a short display label shown on its homepage card.
+const SCHEMATIC_TASK_IDS = new Set(["corner-bracket-v2", "bore-socket"]);
+function taskTypeLabel(task: Task): string {
+  if (SCHEMATIC_TASK_IDS.has(task.id)) return "2D schematic → 3D design";
+  if ((task as { input_pdf?: string | null }).input_pdf) return "2D schematic → 3D design";
+  return "Modifying a primitive";
 }
 
 function TaskCard({ task }: { task: Task }) {
@@ -45,13 +38,12 @@ function TaskCard({ task }: { task: Task }) {
       </div>
       <div className="p-4 border-t border-neutral-200">
         <div className="text-[10px] uppercase tracking-wider text-neutral-500 mb-1">
-          {task.category} · {task.sub_category} · {task.difficulty}
+          {task.category} · {task.difficulty}
         </div>
         <div className="font-mono text-sm text-ink mb-2">{task.id}</div>
-        <div className="flex gap-2">
-          {rewardChip(task.results.opus?.reward, "Opus")}
-          {rewardChip(task.results.haiku?.reward, "Haiku")}
-        </div>
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+          {taskTypeLabel(task)}
+        </span>
       </div>
     </Link>
   );
