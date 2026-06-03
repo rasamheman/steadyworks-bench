@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build:data && next build",
+  "buildCommand": "next build",
   "outputDirectory": "out",
   "framework": "nextjs"
 }
