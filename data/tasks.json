@@ -1,0 +1,313 @@
+{
+  "tasks": [
+    {
+      "id": "bolt-and-nut",
+      "category": null,
+      "sub_category": null,
+      "task_class": null,
+      "difficulty": null,
+      "discriminator": null,
+      "prompt": "The file `/app/plate.step` contains a rectangular plate (60 × 60 × 10 mm)\nwith a Ø10 mm through-hole centered at the origin, axis along Z.\n\nAdd two fasteners that mate through this hole:\n\n1. **A hex socket-head cap screw conforming to DIN EN ISO 4762, size M8 × 25.**\n   The head must bear against the +Z (top) face of the plate, with the\n   threaded shank passing down through the plate hole.\n\n2. **A hex nut conforming to DIN EN ISO 4032, size M8.** The nut must sit\n   on the −Z (bottom) face of the plate, coaxial with the bolt, and the\n   bolt's shank must extend completely through the nut to provide full\n   thread engagement.\n\nOutput the complete assembly as a STEP file at `/app/out.step` containing\nall three solids (plate, bolt, nut) as **distinct bodies** within a single\nfile. Also write an STL mesh of the assembly to `/app/out.stl`.\n\nNotes:\n  - The plate hole (Ø10) is intentionally larger than the M8 thread for\n    clearance — do not resize the bolt to match the hole.\n  - You must look up the standards (ISO 4762 for the cap screw, ISO 4032\n    for the hex nut) to determine head dimensions, socket dimensions, nut\n    thickness, and across-flats width. These are not given in this prompt.\n  - For the threaded portion of the bolt and the nut bore, a plain\n    cylindrical representation at the nominal thread diameter is acceptable\n    — actual helical thread geometry is not required.",
+      "models": {
+        "input": "/models/bolt-and-nut/input.glb",
+        "reference": "/models/bolt-and-nut/reference.glb",
+        "opus": "/models/bolt-and-nut/opus.glb",
+        "haiku": null
+      },
+      "results": {
+        "opus": null,
+        "haiku": null
+      }
+    },
+    {
+      "id": "bore-socket",
+      "category": "MCAD",
+      "sub_category": "2D-to-3D Build",
+      "task_class": "Build",
+      "difficulty": "Hard",
+      "discriminator": "Reading PDF schematics + 3D construction. Per [[findings]], frontier models spend ~25% of turn budget reading PDFs. Weaker models often misinterpret views or miss features entirely.",
+      "prompt": "`/app/Steel Plain Bore Sprocket.pdf` contains an engineering schematic. Read it and build a 3D solid model that matches the design.\n\nSave the model as a STEP file at `/app/out.step`. The model must be a single closed manifold solid.",
+      "models": {
+        "input": null,
+        "reference": "/models/bore-socket/reference.glb",
+        "opus": "/models/bore-socket/opus.glb",
+        "haiku": null
+      },
+      "results": {
+        "opus": null,
+        "haiku": {
+          "reward": 0,
+          "tests_passed": null,
+          "tests_total": 8,
+          "duration_sec": 1240,
+          "cost_usd": null,
+          "tool_calls": 34,
+          "tools_by_type": {
+            "TaskOutput": 3,
+            "Write": 9,
+            "Read": 1,
+            "Bash": 21
+          },
+          "libraries": [
+            "numpy-stl",
+            "cadquery",
+            "trimesh",
+            "OCP"
+          ],
+          "stuck_points": 20
+        }
+      }
+    },
+    {
+      "id": "corner-bracket-v2",
+      "category": null,
+      "sub_category": null,
+      "task_class": null,
+      "difficulty": null,
+      "discriminator": null,
+      "prompt": "`/app/schematic.pdf` contains an engineering drawing of a corner bracket with multiple views (isometric, side, top, front) and all dimensions.\n\nBuild the bracket as specified in the drawing. Output:\n\n- `/app/out.step` — single STEP body\n- `/app/out.stl` — STL mesh\n\nMatch all features shown: the trapezoidal taper, all holes on every face, and all edge fillets. Pay attention to how rounded edges interact with the slanted end faces.\n\n**Important:** Save `/app/out.step` and `/app/out.stl` as soon as you have any valid geometry, then iterate to add missing features. This way, partial progress is preserved even if later refinements fail or time runs short.",
+      "models": {
+        "input": null,
+        "reference": "/models/corner-bracket-v2/reference.glb",
+        "opus": "/models/corner-bracket-v2/opus.glb",
+        "haiku": null
+      },
+      "results": {
+        "opus": null,
+        "haiku": null
+      }
+    },
+    {
+      "id": "cube-chamfer-and-fillet",
+      "category": "MCAD",
+      "sub_category": "Primitive Modifications",
+      "task_class": "Modify",
+      "difficulty": "Easy",
+      "discriminator": "Both chamfer and fillet operations required; agents tend to apply one not both.",
+      "prompt": "`/app/cube-chamfer-and-fillet.step` contains a 50 × 50 × 50 mm solid cube.\n\nModify the cube so that:\n- The four top edges (highest-Z face) are chamfered at **5 mm × 45°** (equal-distance chamfer).\n- The four bottom edges (lowest-Z face) are filleted at **R = 3 mm**.\n\nThe four vertical edges must remain unmodified.\n\nSave the modified part to `/app/out.step`.",
+      "models": {
+        "input": "/models/cube-chamfer-and-fillet/input.glb",
+        "reference": "/models/cube-chamfer-and-fillet/reference.glb",
+        "opus": "/models/cube-chamfer-and-fillet/opus.glb",
+        "haiku": "/models/cube-chamfer-and-fillet/haiku.glb"
+      },
+      "results": {
+        "opus": {
+          "reward": 1,
+          "tests_passed": 10,
+          "tests_total": 10,
+          "duration_sec": 392,
+          "cost_usd": 0.39104,
+          "tool_calls": 11,
+          "tools_by_type": {
+            "Write": 1,
+            "Bash": 10
+          },
+          "libraries": [
+            "build123d",
+            "OCP"
+          ],
+          "stuck_points": 20
+        },
+        "haiku": {
+          "reward": 1,
+          "tests_passed": 10,
+          "tests_total": 10,
+          "duration_sec": 442,
+          "cost_usd": 0.208329,
+          "tool_calls": 32,
+          "tools_by_type": {
+            "Write": 2,
+            "Bash": 30
+          },
+          "libraries": [
+            "build123d",
+            "OCP"
+          ],
+          "stuck_points": 20
+        }
+      }
+    },
+    {
+      "id": "cylinder-to-spiral-bevel-gear",
+      "category": "MCAD",
+      "sub_category": "Primitive Modifications",
+      "task_class": "Modify",
+      "difficulty": "Hard",
+      "discriminator": "No native CAD primitive for spiral bevel gears in any common Python CAD library. Agent must construct the gear from first principles: conical pitch surface + spiral tooth traces + involute cross-sections + boolean subtraction. Polyline-vs-BSPLINE divergence (from prior findings) should appear strongly here. Weaker models likely produce a straight bevel, polyline approximation, or fail to produce any teeth at all.",
+      "prompt": "`/app/cylinder-primitive.step` contains a solid stock cylinder, Ø 540 mm × 145 mm tall along the Z axis. The cylinder's axis is at (X = 291, Y = 0); its base sits at Z = 0 and its top at Z = 145.\n\nMachine this stock into a spiral bevel gear with the following design:\n\n- **Tooth count:** 64\n- **Inside (toe) pitch diameter:** 325 mm\n- **Outside (heel) pitch diameter:** 535 mm\n- **Face width** (along pitch cone): 120 mm\n- **Face cone angle** (half-angle of the outer face cone from the gear axis): 70°\n- **Spiral angle at mean radius:** 35°\n- **Hand:** right\n- **Drill a center shaft bore through the part:** Ø 97 mm hole coaxial with the gear axis, full depth (from Z = 0 to Z = 145). The input stock has no bore — the agent must add it.\n- **Gear axis:** coaxial with the stock cylinder\n\nTrue involute spiral tooth flanks (B-spline surfaces). Do not approximate the tooth profile with polylines.\n\nThe gear must fit entirely within the stock cylinder envelope — no material may extend outside R = 270 from the axis or outside Z ∈ [0, 145].\n\nSave the modified part to `/app/out.step`.",
+      "models": {
+        "input": "/models/cylinder-to-spiral-bevel-gear/input.glb",
+        "reference": "/models/cylinder-to-spiral-bevel-gear/reference.glb",
+        "opus": null,
+        "haiku": null
+      },
+      "results": {
+        "opus": {
+          "reward": 0,
+          "tests_passed": null,
+          "tests_total": 10,
+          "duration_sec": 219,
+          "cost_usd": null,
+          "tool_calls": null,
+          "tools_by_type": {},
+          "libraries": [],
+          "stuck_points": 0
+        },
+        "haiku": {
+          "reward": 0,
+          "tests_passed": null,
+          "tests_total": 10,
+          "duration_sec": 701,
+          "cost_usd": 0.324326,
+          "tool_calls": 30,
+          "tools_by_type": {
+            "Write": 7,
+            "Bash": 22,
+            "Edit": 1
+          },
+          "libraries": [
+            "FreeCAD",
+            "cadquery",
+            "OCP"
+          ],
+          "stuck_points": 16
+        }
+      }
+    },
+    {
+      "id": "flywheel-weight-reduction",
+      "category": "MCAD",
+      "sub_category": "Primitive Modifications",
+      "task_class": "Modify",
+      "difficulty": "Easy",
+      "discriminator": "Agent must correctly construct 4 symmetric arc slots (not generic pockets) with the right centerline radius, angular sweep, and semicircular end caps, plus a coaxial center bore. Tests catch wrong slot count, asymmetric placement, sharp corners, and blind vs through.",
+      "prompt": "`/app/flywheel-base.step` contains a 140 mm diameter steel flywheel disc, 5 mm thick, with a 40 mm raised hub at the center. The rotation axis is Z, with the hub on the +Z side (hub top at Z = 0, disc bottom at Z = 10).\n\nModify the part to reduce its rotational inertia:\n\n- Round the inner corner between the hub and the disc with a **2 mm fillet**.\n- Cut a **Ø 30 mm bore** along the rotation axis, all the way through.\n- Cut **four arc-slot lightening windows** through the disc — one per quadrant, centered on the 45°, 135°, 225°, and 315° diagonal bisectors. Each slot spans **30°** of arc with its centerline at **R = 45 mm**; the slot is **20 mm wide** (inner arc R = 35, outer arc R = 55) and capped with semicircular ends of **R = 10 mm**.\n\nPreserve the outer rim (R = 70), the hub diameter where it isn't bored or filleted, the hub top face at Z = 0, and the overall bounding box.\n\nSave the modified part to `/app/out.step`.",
+      "models": {
+        "input": "/models/flywheel-weight-reduction/input.glb",
+        "reference": "/models/flywheel-weight-reduction/reference.glb",
+        "opus": "/models/flywheel-weight-reduction/opus.glb",
+        "haiku": "/models/flywheel-weight-reduction/haiku.glb"
+      },
+      "results": {
+        "opus": {
+          "reward": 1,
+          "tests_passed": 15,
+          "tests_total": 15,
+          "duration_sec": 909,
+          "cost_usd": 1.283311,
+          "tool_calls": 15,
+          "tools_by_type": {
+            "Write": 3,
+            "Read": 1,
+            "Bash": 10,
+            "Edit": 1
+          },
+          "libraries": [
+            "cadquery",
+            "OCP"
+          ],
+          "stuck_points": 20
+        },
+        "haiku": {
+          "reward": 0.2667,
+          "tests_passed": 4,
+          "tests_total": 15,
+          "duration_sec": 503,
+          "cost_usd": null,
+          "tool_calls": 45,
+          "tools_by_type": {
+            "TaskOutput": 1,
+            "Write": 7,
+            "Read": 1,
+            "Bash": 33,
+            "Edit": 3
+          },
+          "libraries": [
+            "build123d",
+            "FreeCAD",
+            "trimesh",
+            "OCP"
+          ],
+          "stuck_points": 20
+        }
+      }
+    },
+    {
+      "id": "gear-pair",
+      "category": null,
+      "sub_category": null,
+      "task_class": null,
+      "difficulty": null,
+      "discriminator": null,
+      "prompt": "Build a meshing pair of involute spur gears as a STEP assembly with two distinct bodies, plus an STL mesh.\n\nGear 1: 20 teeth, module 2, pressure angle 20°, 10 mm face width, Ø10 hub bore, centered at the origin, axis along Z.\n\nGear 2: 30 teeth, same specs as Gear 1 otherwise, centered at (50, 0, 0), axis along Z.\n\nThe gears must mesh — Gear 2 must be rotated about its own axis so its teeth engage Gear 1's tooth gaps at the contact point.\n\nWrite to `/app/out.step` (two distinct solids) and `/app/out.stl`.",
+      "models": {
+        "input": null,
+        "reference": "/models/gear-pair/reference.glb",
+        "opus": "/models/gear-pair/opus.glb",
+        "haiku": null
+      },
+      "results": {
+        "opus": null,
+        "haiku": null
+      }
+    },
+    {
+      "id": "hex-prism-with-holes",
+      "category": "MCAD",
+      "sub_category": "Primitive Modifications",
+      "task_class": "Modify",
+      "difficulty": "Easy",
+      "discriminator": "Three distinct features at three different angular positions on a hex prism: through-hole pair, single through-hole, blind bore. Tests hex face geometry math (across-flats vs across-corners), perpendicular drilling along face normals, and the through vs blind distinction.",
+      "prompt": "`/app/hex-prism-primitive.step` contains a solid hexagonal prism centered on the Z axis: 60 mm circumscribed diameter (30 mm side length, 51.96 mm across flats), 50 mm tall (Z ∈ [−25, +25]). The prism is \"flat-top\" oriented — one of the six rectangular side faces is perpendicular to the +X axis. Each side face is a 30 mm × 50 mm rectangle.\n\nModify the prism by drilling three sets of holes on three different side faces:\n\n- **Pick one side face.** Drill **two Ø 10 mm holes through it, exiting on the opposite face**. The two hole centers sit on the vertical centerline of the chosen face, offset **±15 mm above and below the face's vertical mid-point** (so the holes are vertically separated by 30 mm, both at horizontal face-center).\n\n- **On a different side face**, drill a **single Ø 20 mm hole through the face, exiting on the opposite face**. The hole is centered exactly at the chosen face's geometric center.\n\n- **On a third side face** (one not yet drilled), make a **Ø 10 mm blind bore, 10 mm deep**, centered at the chosen face's geometric center. This bore stops inside the prism — it does not exit on the opposite face.\n\nThe three remaining side faces, the top face (Z = +25), and the bottom face (Z = −25) must be left untouched. The prism's outer hex envelope must be preserved.\n\nSave the modified part to `/app/out.step`.",
+      "models": {
+        "input": "/models/hex-prism-with-holes/input.glb",
+        "reference": "/models/hex-prism-with-holes/reference.glb",
+        "opus": "/models/hex-prism-with-holes/opus.glb",
+        "haiku": null
+      },
+      "results": {
+        "opus": {
+          "reward": 0.6,
+          "tests_passed": 6,
+          "tests_total": 10,
+          "duration_sec": 1049,
+          "cost_usd": 2.37644,
+          "tool_calls": 16,
+          "tools_by_type": {
+            "Write": 1,
+            "Read": 1,
+            "Bash": 14
+          },
+          "libraries": [
+            "cadquery",
+            "OCP"
+          ],
+          "stuck_points": 20
+        },
+        "haiku": {
+          "reward": 0,
+          "tests_passed": null,
+          "tests_total": 10,
+          "duration_sec": 2574,
+          "cost_usd": null,
+          "tool_calls": 73,
+          "tools_by_type": {
+            "Write": 10,
+            "Read": 2,
+            "Bash": 61
+          },
+          "libraries": [
+            "numpy-stl",
+            "pythonocc",
+            "cadquery",
+            "OCP"
+          ],
+          "stuck_points": 20
+        }
+      }
+    }
+  ],
+  "generated_at": "2026-06-03T20:57:42.585Z",
+  "note": "Auto-generated by scripts/build-data.mjs"
+}
